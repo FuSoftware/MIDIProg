@@ -6,6 +6,7 @@
 class Parameter
 {
 public:
+    Parameter() {}
     Parameter(std::string name, double size);
 
     long characters();

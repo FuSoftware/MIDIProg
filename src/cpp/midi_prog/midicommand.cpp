@@ -1,6 +1,6 @@
 #include "midicommand.h"
 
-#include <algorithm>
+//#include <algorithm>
 #include "parameter.h"
 
 MIDICommand::MIDICommand(std::string name) : name(name)
@@ -35,8 +35,8 @@ std::string MIDICommand::generate(std::vector<long> values)
 std::string MIDICommand::generate(std::map<std::string, std::string> values)
 {
     std::string midi = this->midi;
-    for(std::map<std::string,std::string>::iterator it = values.begin(); it != values.end(); ++it) {
-        std::replace(midi.begin(), midi.end(), it->first,values[it->second]);
-    }
+    //for(std::map<std::string,std::string>::iterator it = values.begin(); it != values.end(); ++it) {
+    //    std::replace(midi.begin(), midi.end(), it->first,values[it->second]);
+    //}
     return midi;
 }

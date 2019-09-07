@@ -3,10 +3,11 @@
 #include <fstream>
 #include <vector>
 #include "utils.h"
-#include "command_parsing.h"
 #include <iostream>
 
 #include "synth.h"
+#include "midicommand.h"
+#include "parameter.h"
 
 Config::Config()
 {
@@ -15,76 +16,42 @@ Config::Config()
 
 void Config::run_file(std::string path)
 {
-    std::ifstream input(path);
+    this->run(CommandParser::parse_commands_file(path));
+}
 
-    for(std::string line; getline( input, line );)
+void Config::run(std::vector<Command> commands)
+{
+    for(auto c: commands)
     {
-        trim(line);
-        if(line != "")
-        {
-            this->run(line);
-        }
+        this->run(c);
     }
 }
 
-void Config::run(std::string line)
+void Config::run(Command c)
 {
-    std::vector<std::string> tokens = split(line, '=', true);
-    ConfigCommand command = resolve_command(tokens[0]);
-
-    switch(command)
+    if(c.name == "synth")
     {
-        case ConfigCommand::SOURCE:
-            if(tokens.size() == 2) this->run_file(tokens[1]);
-            else report_parameter_number_error("source", 1, tokens.size()-1);
-            break;
-        case ConfigCommand::DEFINE_SYNTH:
-            break;
-        case ConfigCommand::DEFINE_COMMAND:
-            break;
-        case ConfigCommand::SET_NAME:
-            if(tokens.size() == 2) this->curr_synth->setName(tokens[1]);
-            else report_parameter_number_error("set name", 1, tokens.size()-1);
-            break;
-        case ConfigCommand::SET_MANUFACTURER:
-            break;
-        case ConfigCommand::SET_ALIAS:
-            break;
-        case ConfigCommand::SET_PARAMETER:
-            break;
-        case ConfigCommand::SET_SYSEX:
-            break;
-        case ConfigCommand::UNKNOWN:
-            std::cout << "Found unknown command : '" << line << "'" << std::endl;
-            break;
+        Synth s(c.parameters["id"]);
+        if(c.hasParameter("name")) s.setName(c.parameters["name"]);
+        if(c.hasParameter("manufacturer")) s.setManufacturer(c.parameters["manufacturer"]);
+        this->curr_synth = &s;
+    }
+    else if(c.name == "command")
+    {
+        if(this->curr_synth != nullptr)
+        {
+            MIDICommand comm(c.parameters["name"]);
+        }
+    }
+    else
+    {
+
     }
 }
 
 void Config::load_synth(std::string id)
 {
 
-}
-
-ConfigCommand Config::resolve_command(std::string &command)
-{
-    if (command == "define command")
-        return ConfigCommand::DEFINE_COMMAND;
-    else if (command == "set sysex")
-        return ConfigCommand::SET_SYSEX;
-    else if (command == "set parameter")
-        return ConfigCommand::SET_PARAMETER;
-    else if (command == "set alias")
-        return ConfigCommand::SET_ALIAS;
-    else if (command == "define synth")
-        return ConfigCommand::DEFINE_SYNTH;
-    else if (command == "set manufacturer")
-        return ConfigCommand::SET_MANUFACTURER;
-    else if (command == "set name")
-        return ConfigCommand::SET_NAME;
-    else if (command == "source")
-        return ConfigCommand::SOURCE;
-    else
-        return ConfigCommand::UNKNOWN;
 }
 
 void Config::report_parameter_number_error(std::string command, size_t number, size_t found)

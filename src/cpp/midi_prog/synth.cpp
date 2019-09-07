@@ -1,4 +1,5 @@
 #include "synth.h"
+#include "midicommand.h"
 
 Synth::Synth(std::string id) : id(id)
 {

@@ -8,12 +8,13 @@ SOURCES += \
         main.cpp \
         midicommand.cpp \
         parameter.cpp \
+        parsing/commandparser.cpp \
         synth.cpp
 
 HEADERS += \
-    command_parsing.h \
     config.h \
     midicommand.h \
     parameter.h \
+    parsing/commandparser.h \
     synth.h \
     utils.h

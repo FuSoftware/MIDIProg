@@ -3,18 +3,7 @@
 
 #include <string>
 #include <map>
-
-enum ConfigCommand {
-    SOURCE,
-    DEFINE_SYNTH,
-    DEFINE_COMMAND,
-    SET_MANUFACTURER,
-    SET_NAME,
-    SET_SYSEX,
-    SET_PARAMETER,
-    SET_ALIAS,
-    UNKNOWN = -1
-};
+#include "parsing/commandparser.h"
 
 class Synth;
 class MIDICommand;
@@ -25,16 +14,15 @@ public:
     Config();
 
     void run_file(std::string path);
-    void run(std::string line);
+    void run(std::vector<Command> commands);
+    void run(Command command);
     void load_synth(std::string id);
-    static ConfigCommand resolve_command(std::string &command);
     static void report_parameter_number_error(std::string command, size_t number, size_t found);
 
 private:
     std::map<std::string, Synth> synths;
     std::map<std::string, MIDICommand> aliases;
-    MIDICommand* curr_commands;
-    Synth* curr_synth;
+    Synth* curr_synth = nullptr;
 };
 
 #endif // CONFIG_H

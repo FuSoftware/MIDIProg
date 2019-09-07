@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-class Parameter;
+#include "parameter.h"
 
 class MIDICommand
 {
