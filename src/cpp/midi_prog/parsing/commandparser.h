@@ -3,17 +3,28 @@
 
 #include <vector>
 #include <string>
-#include <map>
+#include <unordered_map>
+#include "utils.h"
 
-struct Command {
+class Command {
+public:
+    Command(){}
+    Command(std::string name): name(name) {}
+
+    void addParameter(std::string k, std::string v);
+    std::string getParameter(std::string key);
+    std::string getParameter(size_t index);
+    bool hasParameter(std::string p);
+    bool hasNumberedParameter(std::string p, size_t index);
+    std::string getNumberedParameter(std::string p, size_t index);
+    std::string getName();
+    void setName(std::string name);
+    std::map<std::string, std::string> getParameters();
+
+private:
     std::string name;
     std::map<std::string, std::string> parameters;
-
-    bool hasParameter(std::string p)
-    {
-        std::map<std::string, std::string>::iterator it = this->parameters.find(p);
-        return it != this->parameters.end();
-    }
+    std::vector<std::string> values;
 };
 
 class CommandParser

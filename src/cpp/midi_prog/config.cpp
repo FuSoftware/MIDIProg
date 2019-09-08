@@ -5,8 +5,6 @@
 #include "utils.h"
 #include <iostream>
 
-#include "synth.h"
-#include "midicommand.h"
 #include "parameter.h"
 
 Config::Config()
@@ -16,7 +14,8 @@ Config::Config()
 
 void Config::run_file(std::string path)
 {
-    this->run(CommandParser::parse_commands_file(path));
+    std::vector<Command> commands = CommandParser::parse_commands_file(path);
+    this->run(commands);
 }
 
 void Config::run(std::vector<Command> commands)
@@ -29,29 +28,57 @@ void Config::run(std::vector<Command> commands)
 
 void Config::run(Command c)
 {
-    if(c.name == "synth")
+    if(c.getName() == "synth")
     {
-        Synth s(c.parameters["id"]);
-        if(c.hasParameter("name")) s.setName(c.parameters["name"]);
-        if(c.hasParameter("manufacturer")) s.setManufacturer(c.parameters["manufacturer"]);
-        this->curr_synth = &s;
+        std::string id = c.getParameter("id");
+        Synth* s = new Synth(id);
+        if(c.hasParameter("name")) s->setName(c.getParameter("name"));
+        if(c.hasParameter("manufacturer")) s->setManufacturer(c.getParameter("manufacturer"));
+        this->curr_synth = s;
+        std::pair<std::string, Synth*> data(id, s);
+        this->synths.insert(data);
     }
-    else if(c.name == "command")
+    else if(c.getName() == "command")
     {
         if(this->curr_synth != nullptr)
         {
-            MIDICommand comm(c.parameters["name"]);
+            MIDICommand comm(c.getParameter("name"));
+            comm.addAliases(c.getParameter("aliases"));
+            comm.setMidi(c.getParameter("sysex"));
+
+            //Parameters
+            size_t i = 0;
+            std::string key = "parameter";
+            while(c.hasNumberedParameter("parameter", i))
+            {
+                std::string p = c.getNumberedParameter("parameter",i);
+                i++;
+                comm.addParameter(p);
+            }
+            this->curr_synth->getCommands()->push_back(comm);
         }
+    }
+    else if(c.getName() == "source")
+    {
+        this->run_file(c.getParameter(0));
     }
     else
     {
-
+        std::cout << "Unrecognized command " << c.getName() << std::endl;
     }
 }
 
 void Config::load_synth(std::string id)
 {
-
+    if(map_has_key(this->synths, id))
+    {
+        this->curr_synth = this->synths[id];
+        std::cout << "Synth " << id << " loaded"<< std::endl;
+    }
+    else
+    {
+        std::cout << "Synth " << id << " not found"<< std::endl;
+    }
 }
 
 void Config::report_parameter_number_error(std::string command, size_t number, size_t found)

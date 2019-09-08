@@ -5,6 +5,56 @@
 #include <fstream>
 #include <iostream>
 
+void Command::addParameter(std::string k, std::string v)
+{
+    this->values.push_back(v);
+    this->parameters.insert(std::make_pair<std::string, std::string>(k.c_str(),v.c_str()));
+}
+
+std::string Command::getParameter(std::string key)
+{
+    return this->parameters[key];
+}
+
+std::string Command::getParameter(size_t index)
+{
+    return this->values[index];
+}
+
+bool Command::hasParameter(std::string p)
+{
+    return map_has_key<std::string, std::string>(this->parameters,p);
+}
+
+bool Command::hasNumberedParameter(std::string p, size_t index)
+{
+    p.append("_");
+    p.append(std::to_string(index));
+    return map_has_key<std::string, std::string>(this->parameters,p);
+}
+
+std::string Command::getNumberedParameter(std::string p, size_t index)
+{
+    p.append("_");
+    p.append(std::to_string(index));
+    return hasParameter(p) ? this->parameters[p] :  "";
+}
+
+std::string Command::getName()
+{
+    return this->name;
+}
+
+void Command::setName(std::string name)
+{
+    this->name = name;
+}
+
+std::map<std::string, std::string> Command::getParameters()
+{
+    return  this->parameters;
+}
+
 CommandParser::CommandParser()
 {
 
@@ -15,6 +65,7 @@ std::vector<std::string> CommandParser::get_commands_file(std::string file)
     std::ifstream t(file);
     std::stringstream buffer;
     buffer << t.rdbuf();
+    if(buffer.str() == "") std::cout << "File " << file << " couldn't be read" << std::endl;
     return CommandParser::get_commands(buffer.str());
 }
 
@@ -32,6 +83,10 @@ std::vector<std::string> CommandParser::get_commands(std::string content)
             {
                 current_command += line;
             }
+            else if(current_command == "")
+            {
+                current_command = line;
+            }
             else
             {
                 commands.push_back(current_command);
@@ -40,10 +95,12 @@ std::vector<std::string> CommandParser::get_commands(std::string content)
         }
     }
 
+    if(current_command != "") commands.push_back(current_command);
+
     return commands;
 }
 
-static std::vector<Command> parse_commands_file(std::string file)
+std::vector<Command> CommandParser::parse_commands_file(std::string file)
 {
     return CommandParser::parse_commands(CommandParser::get_commands_file(file));
 }
@@ -64,20 +121,36 @@ Command CommandParser::parse_command(std::string content)
 {
     Command command;
     std::regex r_params("-(\\S+) \"([^\"]+)\"");
-    std::regex r_comm("([^\"\\s]+)-");
+    std::regex r_comm("([^\"\\s]+)(\\s?+)-");
 
     std::smatch match;
 
     if(std::regex_search(content, match, r_comm))
     {
-        command.name = match[1];
+        command.setName(match[1]);
     }
 
     std::string s = content;
+    std::unordered_map<std::string, size_t> count;
 
     while(std::regex_search(s, match, r_params))
     {
-        command.parameters.insert(std::make_pair<std::string, std::string>(match[1],match[2]));
+        bool is_numbered = (match[1].str()[0] == '@');
+        std::string p = static_cast<std::string>(match[1].str());
+        if(is_numbered)
+        {
+            if(!umap_has_key<std::string, size_t>(count, p))
+            {
+                count.insert(std::make_pair<std::string, size_t>(p.c_str(), 0));
+            }
+            size_t c = count[p];
+            count[p] = count[p]+1;
+            p.erase(0,1);
+            p.append("_");
+            p.append(std::to_string(c));
+        }
+
+        command.addParameter(p, match[2]);
         s = match.suffix();
     }
 

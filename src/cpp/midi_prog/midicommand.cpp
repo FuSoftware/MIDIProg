@@ -1,7 +1,6 @@
 #include "midicommand.h"
-
-//#include <algorithm>
-#include "parameter.h"
+#include "utils.h"
+#include <algorithm>
 
 MIDICommand::MIDICommand(std::string name) : name(name)
 {
@@ -35,8 +34,46 @@ std::string MIDICommand::generate(std::vector<long> values)
 std::string MIDICommand::generate(std::map<std::string, std::string> values)
 {
     std::string midi = this->midi;
-    //for(std::map<std::string,std::string>::iterator it = values.begin(); it != values.end(); ++it) {
-    //    std::replace(midi.begin(), midi.end(), it->first,values[it->second]);
-    //}
+    for(std::map<std::string,std::string>::iterator it = values.begin(); it != values.end(); ++it) {
+        findAndReplaceAll(midi, it->first, it->second);
+    }
     return midi;
+}
+
+void MIDICommand::addParameter(std::string p)
+{
+    std::vector<std::string> tokens = split(p, ':', true);
+    this->addParameter(tokens[0], std::stod(tokens[1]) , tokens[2]);
+}
+
+void MIDICommand::addParameter(std::string key, double length, std::string name)
+{
+    this->addParameter(Parameter(key, name, length));
+}
+
+void MIDICommand::addParameter(Parameter p)
+{
+    std::string k = p.getKey();
+    std::pair<std::string, Parameter> data(k, p);
+    this->parameters.insert(data);
+}
+
+void MIDICommand::addAliases(std::string values)
+{
+    std::vector<std::string> aliases = split(values, ' ', true);
+    this->addAliases(aliases);
+}
+
+void MIDICommand::addAliases(std::vector<std::string> values)
+{
+    for(auto a : values)
+    {
+        this->aliases.push_back(a);
+    }
+}
+
+
+void MIDICommand::setMidi(std::string midi)
+{
+    this->midi = midi;
 }

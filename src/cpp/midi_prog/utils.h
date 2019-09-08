@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <map>
+#include <unordered_map>
 
 // trim from start (in place)
 static inline void ltrim(std::string &s) {
@@ -57,6 +59,33 @@ static inline std::vector<std::string> split(const std::string& s, char delimite
         tokens.push_back(token);
     }
     return tokens;
+}
+
+template <typename K, typename V>
+static bool umap_has_key(std::unordered_map<K, V> m, K k){
+    auto it = m.find(k);
+    return it != m.end();
+}
+
+template <typename K, typename V>
+static bool map_has_key(std::map<K, V> m, K k){
+    auto it = m.find(k);
+    return it != m.end();
+}
+
+static void findAndReplaceAll(std::string &data, std::string toSearch, std::string replaceStr)
+{
+    // Get the first occurrence
+    size_t pos = data.find(toSearch);
+
+    // Repeat till end is reached
+    while( pos != std::string::npos)
+    {
+        // Replace this occurrence of Sub String
+        data.replace(pos, toSearch.size(), replaceStr);
+        // Get the next occurrence from the current position
+        pos =data.find(toSearch, pos + replaceStr.size());
+    }
 }
 
 

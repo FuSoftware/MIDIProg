@@ -14,6 +14,14 @@ public:
 
     std::string generate(std::vector<long> values);
     std::string generate(std::map<std::string, std::string> values);
+    void addParameter(std::string p);
+    void addParameter(std::string key, double length, std::string name);
+    void addParameter(Parameter p);
+
+    void addAliases(std::string values);
+    void addAliases(std::vector<std::string> values);
+
+    void setMidi(std::string midi);
 
 private:
     std::string name;
