@@ -5,6 +5,7 @@ CONFIG -= qt
 
 SOURCES += \
         config.cpp \
+        interpreter.cpp \
         main.cpp \
         midicommand.cpp \
         parameter.cpp \
@@ -13,6 +14,7 @@ SOURCES += \
 
 HEADERS += \
     config.h \
+    interpreter.h \
     midicommand.h \
     parameter.h \
     parsing/commandparser.h \

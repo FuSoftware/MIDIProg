@@ -68,17 +68,9 @@ void Config::run(Command c)
     }
 }
 
-void Config::load_synth(std::string id)
+Synth* Config::get_synth(std::string id)
 {
-    if(map_has_key(this->synths, id))
-    {
-        this->curr_synth = this->synths[id];
-        std::cout << "Synth " << id << " loaded"<< std::endl;
-    }
-    else
-    {
-        std::cout << "Synth " << id << " not found"<< std::endl;
-    }
+    return map_has_key(this->synths, id) ? this->synths[id] : nullptr;
 }
 
 void Config::report_parameter_number_error(std::string command, size_t number, size_t found)

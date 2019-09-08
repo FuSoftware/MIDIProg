@@ -28,7 +28,7 @@ command
     -name "Parameter Change"
     -sysex "F0 42 3n 0B 41 p v F7"
     -@parameter "n : 0.5 : Channel"
-    -@parameter "p : 1 : Program"
+    -@parameter "p : 1 : Parameter"
     -@parameter "v : 1 : Value"
     -alias "pc param parameter parameter-change"
 
