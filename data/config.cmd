@@ -1,2 +1,3 @@
-source -file "D:/Prog/MIDIProg/data/dss-1.cmd"
-source -file "D:/Prog/MIDIProg/data/dw-8000.cmd"
+folder -type "relative"
+source -file "dss-1.cmd"
+source -file "dw-8000.cmd"

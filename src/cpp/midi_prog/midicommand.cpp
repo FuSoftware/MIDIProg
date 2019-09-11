@@ -1,6 +1,7 @@
 #include "midicommand.h"
 #include "utils.h"
 #include <algorithm>
+#include <iostream>
 
 MIDICommand::MIDICommand(std::string name) : name(name)
 {
@@ -11,6 +12,7 @@ std::string MIDICommand::generate(std::vector<long> values)
 {
     if(values.size() != this->parameters.size())
     {
+        std::cout << "Command " << this->name << " expected " << this->parameters.size() << " parameters, got " <<values.size() << std::endl;
         return "";
     }
     else
@@ -38,6 +40,16 @@ std::string MIDICommand::generate(std::map<std::string, std::string> values)
         findAndReplaceAll(midi, it->first, it->second);
     }
     return midi;
+}
+
+std::vector<unsigned char> MIDICommand::generateBytes(std::vector<long> values)
+{
+    return stob(this->generate(values));
+}
+
+std::vector<unsigned char> MIDICommand::generateBytes(std::map<std::string, std::string> values)
+{
+    return stob(this->generate(values));
 }
 
 void MIDICommand::addParameter(std::string p)
@@ -76,4 +88,9 @@ void MIDICommand::addAliases(std::vector<std::string> values)
 void MIDICommand::setMidi(std::string midi)
 {
     this->midi = midi;
+}
+
+std::vector<std::string> MIDICommand::getAliases()
+{
+    return this->aliases;
 }

@@ -22,6 +22,8 @@ public:
 private:
     std::map<std::string, Synth*> synths;
     std::map<std::string, MIDICommand*> aliases;
+    std::string folder;
+    std::string curr_folder = "";
     Synth* curr_synth = nullptr;
 };
 

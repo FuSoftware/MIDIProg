@@ -1,5 +1,6 @@
 #include <iostream>
 #include "parsing/commandparser.h"
+#include "interpreter.h"
 #include "config.h"
 
 void test_command_parsing()
@@ -20,11 +21,16 @@ void test_config()
 {
     Config c;
     c.run_file("D:\\Prog\\MIDIProg\\data\\config.cmd");
-    c.load_synth("dss-1");
+}
+
+void test_interpreter()
+{
+    Interpreter i;
+    i.run_file("/home/fuguet/Prog/MIDIProg/data/run.cmd");
 }
 
 int main()
 {
-    test_config();
+    test_interpreter();
     return 0;
 }

@@ -14,6 +14,7 @@ Config::Config()
 
 void Config::run_file(std::string path)
 {
+    this->curr_folder = get_folder(path);
     std::vector<Command> commands = CommandParser::parse_commands_file(path);
     this->run(commands);
 }
@@ -43,7 +44,7 @@ void Config::run(Command c)
         if(this->curr_synth != nullptr)
         {
             MIDICommand comm(c.getParameter("name"));
-            comm.addAliases(c.getParameter("aliases"));
+            comm.addAliases(c.getParameter("alias"));
             comm.setMidi(c.getParameter("sysex"));
 
             //Parameters
@@ -60,7 +61,24 @@ void Config::run(Command c)
     }
     else if(c.getName() == "source")
     {
-        this->run_file(c.getParameter(0));
+        std::string path = (this->folder != "" ? this->folder + "/" : "") + c.getParameter(0);
+        this->run_file(path);
+    }
+    else if(c.getName() == "folder")
+    {
+        if(c.hasParameter("type"))
+        {
+            std::string type = c.getParameter("type");
+
+            if(type == "relative")
+            {
+                this->folder = this->curr_folder;
+            }
+            else if (type == "absolute")
+            {
+                this->folder = "";
+            }
+        }
     }
     else
     {

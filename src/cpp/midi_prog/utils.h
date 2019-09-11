@@ -88,5 +88,28 @@ static void findAndReplaceAll(std::string &data, std::string toSearch, std::stri
     }
 }
 
+static std::vector<unsigned char> stob(std::string c)
+{
+    c.erase(std::remove(c.begin(), c.end(), ' '), c.end());
+    std::vector<unsigned char> bytes;
+
+    size_t i = 0;
+    while(i+2 < c.size())
+    {
+        bytes.push_back(static_cast<unsigned char>(std::stoi(c.substr(i,2),nullptr,16)));
+        i++;
+    }
+
+    return bytes;
+}
+
+static std::string get_folder(std::string path)
+{
+    size_t found;
+    found=path.find_last_of("/\\");
+    std::string folder = path.substr(0,found);
+    return folder;
+}
+
 
 #endif // UTILS_H

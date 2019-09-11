@@ -14,6 +14,10 @@ public:
 
     std::string generate(std::vector<long> values);
     std::string generate(std::map<std::string, std::string> values);
+
+    std::vector<unsigned char> generateBytes(std::vector<long> values);
+    std::vector<unsigned char> generateBytes(std::map<std::string, std::string> values);
+
     void addParameter(std::string p);
     void addParameter(std::string key, double length, std::string name);
     void addParameter(Parameter p);
@@ -22,6 +26,8 @@ public:
     void addAliases(std::vector<std::string> values);
 
     void setMidi(std::string midi);
+
+    std::vector<std::string> getAliases();
 
 private:
     std::string name;
