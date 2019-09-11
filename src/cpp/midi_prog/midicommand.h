@@ -2,10 +2,13 @@
 #define MIDICOMMAND_H
 
 #include <string>
+#include <unordered_map>
 #include <map>
 #include <vector>
 
 #include "parameter.h"
+
+using ParameterMap = std::unordered_map<std::string, Parameter>;
 
 class MIDICommand
 {
@@ -32,7 +35,8 @@ public:
 private:
     std::string name;
     std::string midi;
-    std::map<std::string, Parameter> parameters;
+    std::unordered_map<std::string, Parameter> parameters;
+    std::vector<std::string> parameter_names;
     std::vector<std::string> aliases;
 };
 

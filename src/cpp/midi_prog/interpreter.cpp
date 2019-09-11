@@ -40,14 +40,26 @@ void Interpreter::run(std::string command)
     {
         this->load_synth(tokens[1]);
     }
+    else if(c == "interactive")
+    {
+        this->interactive();
+    }
     else if(c == "config")
     {
         std::string path = (this->folder != "" ? this->folder + "/" : "") + tokens[1];
         this->config.run_file(path);
     }
+    else if(c == "port")
+    {
+        this->interface.setPort(std::stoi(tokens[1]));
+    }
     else if(c == "channel")
     {
         this->channel = std::stoi(tokens[1]);
+    }
+    else if(c == "receive")
+    {
+        this->interface.waitMidi();
     }
     else if(c == "sysex")
     {
@@ -61,8 +73,17 @@ void Interpreter::run(std::string command)
             values.push_back(std::stoi(tokens[i]));
         }
 
-        std::string data = this->sysex[alias]->generate(values);
-        std::cout << data << std::endl;
+        std::vector<unsigned char> data = this->sysex[alias]->generateBytes(values);
+
+        std::cout << this->sysex[alias]->generate(values) << std::endl;
+        std::cout << std::hex;
+        for(auto d : data)
+        {
+            std::cout << std::hex << static_cast<int>(d) << " ";
+        }
+        std::cout << std::dec << std::endl;
+
+        this->interface.send(data);
     }
     else if(c == "midi")
     {
@@ -83,6 +104,24 @@ void Interpreter::run(std::string command)
     else
     {
         std::cout << "Unknown command : " << c << std::endl;
+    }
+}
+
+void Interpreter::interactive()
+{
+    std::string command;
+    while (true)
+    {
+        std::cout << "> ";
+        std::getline(std::cin, command);
+
+        std::vector<std::string> commands = split(command, '|', true);
+
+        if(command == "exit"){
+            break;
+        } else{
+            this->run(commands);
+        }
     }
 }
 

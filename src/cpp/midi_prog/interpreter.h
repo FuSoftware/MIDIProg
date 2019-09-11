@@ -17,9 +17,10 @@ public:
     void run_file(std::string command);
     void run(std::vector<std::string> commands);
     void run(std::string command);
+    void interactive();
 
 private:
-    MIDIInterface *interface;
+    MIDIInterface interface;
     Synth *synth = nullptr;
     std::map<std::string, MIDICommand*> sysex;
     Config config;

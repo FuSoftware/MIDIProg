@@ -94,10 +94,10 @@ static std::vector<unsigned char> stob(std::string c)
     std::vector<unsigned char> bytes;
 
     size_t i = 0;
-    while(i+2 < c.size())
+    while(i+1 < c.size())
     {
         bytes.push_back(static_cast<unsigned char>(std::stoi(c.substr(i,2),nullptr,16)));
-        i++;
+        i+=2;
     }
 
     return bytes;

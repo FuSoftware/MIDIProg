@@ -18,11 +18,7 @@ std::string MIDICommand::generate(std::vector<long> values)
     else
     {
         std::map<std::string, std::string> val;
-        std::vector<std::string> keys;
-
-        for(std::map<std::string,Parameter>::iterator it = this->parameters.begin(); it != this->parameters.end(); ++it) {
-            keys.push_back(it->first);
-        }
+        std::vector<std::string> keys = this->parameter_names;
 
         for(size_t i=0;i<values.size();i++)
         {
@@ -68,6 +64,7 @@ void MIDICommand::addParameter(Parameter p)
     std::string k = p.getKey();
     std::pair<std::string, Parameter> data(k, p);
     this->parameters.insert(data);
+    this->parameter_names.push_back(k);
 }
 
 void MIDICommand::addAliases(std::string values)

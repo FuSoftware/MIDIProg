@@ -11,6 +11,7 @@ SOURCES += \
         midiinterface.cpp \
         parameter.cpp \
         parsing/commandparser.cpp \
+        rtmidi/RtMidi.cpp \
         synth.cpp
 
 HEADERS += \
@@ -20,5 +21,18 @@ HEADERS += \
     midiinterface.h \
     parameter.h \
     parsing/commandparser.h \
+    rtmidi/RtMidi.h \
     synth.h \
     utils.h
+
+DEFINES += RTMIDI_DEBUG
+
+win32 {
+    DEFINES += __WINDOWS_MM__
+    LIBS += -lwinmm
+}
+
+unix{
+    DEFINES += __LINUX_ALSA__
+    LIBS += -lasound -lpthread
+}
