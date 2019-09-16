@@ -1,9 +1,11 @@
 #include "commandparser.h"
-#include <regex>
 #include "utils.h"
 #include <sstream>
 #include <fstream>
 #include <iostream>
+
+std::regex CommandParser::r_params = std::regex("-(\\S+) \"([^\"]+)\"");
+std::regex CommandParser::r_comm = std::regex("([^\"\\s]+)(\\s?+)-");
 
 void Command::addParameter(std::string k, std::string v)
 {
@@ -120,8 +122,7 @@ std::vector<Command> CommandParser::parse_commands(std::vector<std::string> cont
 Command CommandParser::parse_command(std::string content)
 {
     Command command;
-    std::regex r_params("-(\\S+) \"([^\"]+)\"");
-    std::regex r_comm("([^\"\\s]+)(\\s?+)-");
+
 
     std::smatch match;
 

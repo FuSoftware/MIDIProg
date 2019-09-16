@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <regex>
 #include "utils.h"
 
 class Command {
@@ -37,6 +38,9 @@ public:
     static std::vector<Command> parse_commands_file(std::string file);
     static std::vector<Command> parse_commands(std::vector<std::string> content);
     static Command parse_command(std::string content);
+
+    static std::regex r_params;
+    static std::regex r_comm;
 
 private:
 };
