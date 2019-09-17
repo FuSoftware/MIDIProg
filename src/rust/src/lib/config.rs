@@ -1,16 +1,15 @@
 use crate::lib::data::midi_command::MIDICommand;
 use crate::lib::data::parameter::Parameter;
 use crate::lib::data::synth::Synth;
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::{prelude::*, BufReader};
+use crate::lib::utils::command_parser::*;
 
-use std::rc::Rc;
+use std::collections::HashMap;
+
 
 pub struct Config {
     pub synths: HashMap<String, Synth>,
     pub aliases: HashMap<String, MIDICommand>,
-    pub curr_synth: &Synth,
+    pub curr_synth: String,
 }
 
 impl Config {
@@ -18,117 +17,67 @@ impl Config {
         Config {
             synths: HashMap::new(),
             aliases: HashMap::new(),
-            curr_synth: None,
+            curr_synth: String::new(),
         }
     }
 
-    pub fn new_from_file(path: &str) -> Config {
-        let mut c = Config::new();
-        c.run_file(path);
-        c
+    pub fn get_synth(&mut self, id: &str) -> &mut Synth {
+        self.synths.get_mut(id).expect("Synth not found")
     }
 
-    pub fn print_synth_keys(&self) {
-        println!("{}", self.synths.keys().len());
-        for k in self.synths.keys() {
-            println!("{}", k)
-        }
-    }
-
-    pub fn load_synth(&mut self, id: &str) {
-        println!("Loading synth {}", id);
-        let sid = id.to_owned();
-        if self.synths.contains_key(&sid) {
-            println!("Synth found");
-            let synth = &self.synths[&sid];
-            self.aliases.clear();
-            for c in &synth.commands {
-                for a in &c.alias {
-                    println!("Loading alias {}", a);
-                    self.aliases.insert(String::from(a), c.clone());
-                }
-            }
-        } else {
-            println!("Synth not found");
-        }
+    pub fn get_current_synth(&self) -> &mut Synth {
+        let key = self.curr_synth.as_str();
+        self.get_synth(key)
     }
 
     pub fn run_file(&mut self, path: &str) {
-        let file: File = File::open(path).unwrap();
-        let reader = BufReader::new(file);
+        let commands = parse_commands_file(path);
+        self.run_commands(commands);
+    }
 
-        for line in reader.lines() {
-            let l = line.as_ref().unwrap().trim();
-            if l != "" {
-                self.run(l);
-            }
+    pub fn run_commands(&mut self, commands: Vec<Command>) {
+        for c in commands {
+            self.run_command(c);
         }
     }
 
-    pub fn save_synth(&mut self) {
-        let s = self.curr_synth.take().expect("Trying to save a synth but none was being created");
-        println!("Saving synth {}", s.id);
-        self.synths.insert(s.id.clone(), s);
-    }
+    pub fn run_command(&mut self, c: Command) {
+        match c.name.as_str() {
+            "synth" => {
+                let id = c.get_parameter_from_key("id").clone();
+                let mut synth: Synth = Synth::new(id);
+                if c.has_parameter("name") {synth.name = c.get_parameter_from_key("name").clone()}
+                if c.has_parameter("manufacturer") {synth.manufacturer = c.get_parameter_from_key("manufacturer").clone()}
+                self.curr_synth = synth.id.clone();
+                self.synths.insert(synth.id.clone(), synth);
+            },
+            "command" => {
+                if self.curr_synth != "" {
+                    let mut comm: MIDICommand = MIDICommand::new(c.get_parameter_from_key("name").clone());
+                    comm.add_aliases_str(c.get_parameter_from_key("alias").clone());
+                    comm.midi = c.get_parameter_from_key("sysex").clone();
 
-    pub fn current_synth(&mut self) -> &mut Synth {
-        self.curr_synth.as_mut().expect("Trying to load a synth but none was created")
-    }
+                    let mut i: usize = 0;
+                    let key = "parameter";
 
-    pub fn current_command(&mut self) -> &mut MIDICommand {
-        self.current_synth().commands.last_mut().unwrap()
-    }
+                    while c.has_numbered_parameter(key, i) {
+                        let p: String = c.get_numbered_parameter(key, i).clone();
+                        i += 1;
+                        comm.add_parameter(Parameter::new_from_str(p.as_str()));
+                    }
 
-    pub fn run(&mut self, line: &str) {
-        let mut split = line.split("=");
-        let command: &str = split.next().expect("Missing command").trim();
-
-        match command {
-            "source" => {
-                let file = split.next().expect("Missing file name").trim();
-                println!("Parsing file {}", &file);
-                self.run_file(file);
-            }
-            "define synth" => {
-                let synth_name = split.next().expect("Missing synth name").trim();
-                println!("Defining synth {}", &synth_name);
-                let s: Synth = Synth::new(String::from(synth_name));
-                self.curr_synth = Some(s);
-            }
-            "define command" => {
-                self.save_synth();
-                let command_name = split.next().expect("Missing command name").trim();
-                println!("Defining command {}", &command_name);
-                let c: MIDICommand = MIDICommand::new(String::from(command_name));
-                self.current_synth().commands.push(c);
-            }
-            "set manufacturer" => {
-                let name = split.next().expect("Missing manufacturer").trim();
-                self.current_synth().manufacturer = String::from(name);
-            }
-            "set name" => {
-                let name = split.next().expect("Missing name").trim();
-                self.current_synth().name = String::from(name);
-            }
-            "set sysex" => {
-                let midi = split.next().expect("Missing MIDI data").trim();
-                self.current_command().midi = String::from(midi);
-            }
-            "set parameter" => {
-                let mut params = split.next().expect("Missing parameter data").split(":");
-                let k = params.next().expect("Missing parameter id").trim();
-                let d = params.next().expect("Missing parameter size").trim().parse::<f32>().expect("Couldn't parse parameter size");
-                let v = params.next().expect("Missing parameter name").trim();
-                let p: Parameter = Parameter::new(String::from(v), d);
-                self.current_command().parameters.insert(String::from(k), p);
-            }
-            "set alias" => {
-                let aliases: Vec<&str> = split.next().expect("Missing Alias data").split(" ").collect();
-                for a in aliases {
-                    self.current_command().alias.push(String::from(a.trim()));
+                    self.get_current_synth().commands.push(comm);
                 }
+            },
+            "source" => {
+
+            },
+            "folder" => {
+
             }
-            _ => (),
+            _ => {
+                println!("Unrecognized command : {}", c.name);
+            }
         }
     }
 }

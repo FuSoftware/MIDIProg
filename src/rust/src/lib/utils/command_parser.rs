@@ -25,7 +25,7 @@ impl Command {
         self.parameters.insert(k, v);
     }
 
-    pub fn get_parameter_from_key(&self, key: &String) -> &String {
+    pub fn get_parameter_from_key(&self, key: &str) -> &String {
         self.parameters.get(key).expect("Key not found")
     }
 
@@ -33,8 +33,22 @@ impl Command {
         self.values.get(index).expect("Index out of bounds")
     }
 
-    pub fn has_parameter(&self, key: &String) -> bool {
+    pub fn has_parameter(&self, key: &str) -> bool {
         self.parameters.contains_key(key)
+    }
+
+    pub fn has_numbered_parameter(&self, p: &str, index: usize) -> bool {
+        let mut key = String::from(p);
+        key.push('_');
+        key.push_str(index.to_string().as_str());
+        self.parameters.contains_key(&key)
+    }
+
+    pub fn get_numbered_parameter(&self, p: &str, index: usize) -> &String {
+        let mut key = String::from(p);
+        key.push('_');
+        key.push_str(index.to_string().as_str());
+        self.get_parameter_from_key(&key)
     }
 }
 
