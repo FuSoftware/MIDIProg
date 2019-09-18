@@ -10,6 +10,8 @@ pub struct Config {
     pub synths: HashMap<String, Synth>,
     pub aliases: HashMap<String, MIDICommand>,
     pub curr_synth: String,
+    pub folder: String,
+    current_folder: String,
 }
 
 impl Config {
@@ -18,6 +20,8 @@ impl Config {
             synths: HashMap::new(),
             aliases: HashMap::new(),
             curr_synth: String::new(),
+            folder : String::new(),
+            current_folder: String::new(),
         }
     }
 
@@ -25,12 +29,16 @@ impl Config {
         self.synths.get_mut(id).expect("Synth not found")
     }
 
-    pub fn get_current_synth(&self) -> &mut Synth {
-        let key = self.curr_synth.as_str();
-        self.get_synth(key)
+    pub fn get_current_synth(&mut self) -> &mut Synth {
+        let key = self.curr_synth.clone();
+        self.get_synth(&key)
     }
 
     pub fn run_file(&mut self, path: &str) {
+        let x: &[_] = &['\\', '/'];
+        let idx = path.rfind(x).expect(format!("Invalid path : {}", path).as_str());
+        self.current_folder = String::from(path.split_at(idx).0);
+
         let commands = parse_commands_file(path);
         self.run_commands(commands);
     }
@@ -70,10 +78,24 @@ impl Config {
                 }
             },
             "source" => {
-
+                let folder = if self.folder.clone() != "" {self.folder.clone() + "/"} else {String::from("")};
+                let path = folder.clone() + c.get_parameter_from_index(0);
+                self.run_file(&path);
             },
             "folder" => {
+                if c.has_parameter("type") {
+                    let t = c.get_parameter_from_key("type");
 
+                    match t.as_str() {
+                        "relative" => {
+                            self.folder = self.current_folder.clone();
+                        },
+                        "absolute" => {
+                            self.folder = String::from("");
+                        },
+                        _ => ()
+                    }
+                }
             }
             _ => {
                 println!("Unrecognized command : {}", c.name);

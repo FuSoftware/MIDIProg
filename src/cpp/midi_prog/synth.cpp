@@ -34,3 +34,13 @@ std::string Synth::getId()
 {
     return this->id;
 }
+
+std::string Synth::getName()
+{
+    return this->name;
+}
+
+std::string Synth::getManufacturer()
+{
+    return this->manufacturer;
+}

@@ -88,10 +88,32 @@ void test_command_parsing_n(long n)
     std::cout << "Ran " << n << " iterations in " << total / 1000 << " ms (" << total / n << "us/it)" << std::endl;
 }
 
-void test_config()
+long test_config()
 {
+    auto start_time = std::chrono::high_resolution_clock::now();
     Config c;
-    c.run_file("D:\\Prog\\MIDIProg\\data\\config.cmd");
+    c.run_file("/home/fuguet/Prog/MIDIProg/data/config.cmd");
+    auto end_time = std::chrono::high_resolution_clock::now();
+
+    for(Synth* s : c.get_synth_values())
+    {
+        std::cout << "(" << s->getId() << ") " << s->getManufacturer() << " " << s->getName() << std::endl;
+        for(MIDICommand comm : *s->getCommands()){
+            std::cout << "    " << comm.getName() << " => " << comm.getMidi() << std::endl;
+        }
+    }
+
+    return std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+}
+
+void test_config_n(long n)
+{
+    long total = 0;
+    for(long i=0; i<n; i++)
+    {
+        total += test_config();
+    }
+    std::cout << "Ran " << n << " iterations in " << total / 1000 << " ms (" << total / n << "us/it)" << std::endl;
 }
 
 void test_interpreter()
@@ -102,6 +124,6 @@ void test_interpreter()
 
 int main()
 {
-    test_command_parsing_n(500);
+    test_config_n(1000);
     return 0;
 }

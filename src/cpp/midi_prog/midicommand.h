@@ -32,6 +32,9 @@ public:
 
     std::vector<std::string> getAliases();
 
+    std::string getName();
+    std::string getMidi();
+
 private:
     std::string name;
     std::string midi;

@@ -17,6 +17,8 @@ public:
     std::vector<MIDICommand> *getCommands();
 
     std::string getId();
+    std::string getName();
+    std::string getManufacturer();
 
 private:
     std::string name;

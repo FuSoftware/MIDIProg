@@ -17,6 +17,8 @@ public:
     void run(std::vector<Command> commands);
     void run(Command command);
     Synth* get_synth(std::string id);
+    std::vector<std::string> get_synth_list();
+    std::vector<Synth*> get_synth_values();
     static void report_parameter_number_error(std::string command, size_t number, size_t found);
 
 private:

@@ -91,3 +91,13 @@ std::vector<std::string> MIDICommand::getAliases()
 {
     return this->aliases;
 }
+
+std::string MIDICommand::getName()
+{
+    return this->name;
+}
+
+std::string MIDICommand::getMidi()
+{
+    return this->midi;
+}

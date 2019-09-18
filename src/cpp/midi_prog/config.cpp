@@ -95,3 +95,21 @@ void Config::report_parameter_number_error(std::string command, size_t number, s
 {
     std::cout << "Expected '" << number << "' parameters for the '" << command << "' command. Found '" << found << "'" << std::endl;
 }
+
+std::vector<std::string> Config::get_synth_list()
+{
+    std::vector<std::string> keys;
+    for(auto it = this->synths.begin(); it != this->synths.end(); ++it) {
+        keys.push_back(it->first);
+    }
+    return keys;
+}
+
+std::vector<Synth*> Config::get_synth_values()
+{
+    std::vector<Synth*> values;
+    for(auto it = this->synths.begin(); it != this->synths.end(); ++it) {
+        values.push_back(it->second);
+    }
+    return values;
+}

@@ -58,7 +58,7 @@ impl MIDICommand {
         self.param_names.push(s);
     }
 
-    pub fn add_aliaseses_str(&mut self, a: String) {
+    pub fn add_aliases_str(&mut self, a: String) {
         let v = a.split(' ').map(|s| String::from(s.trim())).collect();
         self.add_aliases(v);
     }
