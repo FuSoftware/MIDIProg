@@ -122,8 +122,22 @@ void test_interpreter()
     i.run_file("/home/fuguet/Prog/MIDIProg/data/run.cmd");
 }
 
+void interactive_interpreter(std::string preload)
+{
+    Interpreter i;
+    i.run("midiconfig /home/fuguet/prog/MIDIProg/data/midi.cmd");
+
+    if(preload != "")
+    {
+        i.run("config /home/fuguet/prog/MIDIProg/data/" + preload + ".cmd");
+        i.run("synth " + preload);
+    }
+
+    i.interactive();
+}
+
 int main()
 {
-    test_config_n(1000);
+    interactive_interpreter("ju-2");
     return 0;
 }

@@ -45,7 +45,7 @@ void Config::run(Command c)
         {
             MIDICommand comm(c.getParameter("name"));
             comm.addAliases(c.getParameter("alias"));
-            comm.setMidi(c.getParameter("sysex"));
+            comm.setMidi(c.getParameter("midi"));
 
             //Parameters
             size_t i = 0;

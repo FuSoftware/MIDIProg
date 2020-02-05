@@ -11,6 +11,7 @@ public:
     MIDIInterface();
 
     void setPort(unsigned int port);
+    void listPorts();
     void send(std::vector<unsigned char> data);
     void waitMidi();
 

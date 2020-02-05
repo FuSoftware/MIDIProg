@@ -12,7 +12,7 @@ class Interpreter
 {
 public:
     Interpreter();
-    void load_synth(std::string id);
+    std::map<std::string, MIDICommand *> load_synth(std::string id);
 
     void run_file(std::string command);
     void run(std::vector<std::string> commands);
@@ -23,7 +23,9 @@ private:
     MIDIInterface interface;
     Synth *synth = nullptr;
     std::map<std::string, MIDICommand*> sysex;
+    std::map<std::string, MIDICommand*> midi;
     Config config;
+    int port = 0;
     int channel = -1;
     std::string folder;
     std::string current_folder;
