@@ -25,7 +25,8 @@ private:
     std::map<std::string, MIDICommand*> sysex;
     std::map<std::string, MIDICommand*> midi;
     Config config;
-    int port = 0;
+    int port_in = 0;
+    int port_out = 0;
     int channel = -1;
     std::string folder;
     std::string current_folder;

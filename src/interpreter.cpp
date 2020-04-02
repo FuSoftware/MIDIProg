@@ -65,8 +65,9 @@ void Interpreter::run(std::string command)
     }
     else if(c == "port")
     {
-        this->port = std::stoi(tokens[1]);
-        this->interface.setPort(this->port);
+        this->port_in = std::stoi(tokens[1]);
+        this->port_out = std::stoi(tokens[2]);
+        this->interface.setPort(this->port_in, this->port_out);
     }
     else if(c == "portlist")
     {
@@ -156,7 +157,7 @@ void Interpreter::interactive()
     while (true)
     {
         if(this->synth != nullptr) std::cout << this->synth->getName();
-        std::cout << "@" << this->port;
+        std::cout << "@" << this->port_out;
         if(this->channel > -1) std::cout << "-" << this->channel;
         std::cout << " > ";
 

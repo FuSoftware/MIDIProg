@@ -8,13 +8,13 @@ MIDIInterface::MIDIInterface()
     this->in.ignoreTypes( false, false, false );
 }
 
-void MIDIInterface::setPort(unsigned int port)
+void MIDIInterface::setPort(unsigned int in, unsigned int out)
 {
     this->out.closePort();
-    this->out.openPort(port);
+    this->out.openPort(out);
 
     this->in.closePort();
-    this->in.openPort(port);
+    this->in.openPort(in);
 }
 
 void MIDIInterface::listPorts()

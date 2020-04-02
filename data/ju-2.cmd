@@ -5,7 +5,7 @@ synth
 
 command
     -name "Individual Tone Parameter"
-    -midi "F0 41 36 0n 20 01 p v F7"
+    -midi "F0 41 36 0n 23 20 01 p v F7"
     -@parameter "n : 0.5 : Channel"
     -@parameter "p : 1 : Parameter"
     -@parameter "v : 1 : Value"

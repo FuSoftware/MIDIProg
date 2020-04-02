@@ -30,7 +30,7 @@ void probe()
             error.printMessage();
             goto cleanup;
         }
-        std::cout << "  Input Port #" << i+1 << ": " << portName << '\n';
+        std::cout << "  Input Port #" << i << ": " << portName << '\n';
     }
     // RtMidiOut constructor
     try {
@@ -51,7 +51,7 @@ void probe()
             error.printMessage();
             goto cleanup;
         }
-        std::cout << "  Output Port #" << i+1 << ": " << portName << '\n';
+        std::cout << "  Output Port #" << i << ": " << portName << '\n';
     }
     std::cout << '\n';
     // Clean up
@@ -92,7 +92,7 @@ long test_config()
 {
     auto start_time = std::chrono::high_resolution_clock::now();
     Config c;
-    c.run_file("/home/fuguet/Prog/MIDIProg/data/config.cmd");
+    c.run_file("D:/Prog/MIDIProg/data/config.cmd");
     auto end_time = std::chrono::high_resolution_clock::now();
 
     for(Synth* s : c.get_synth_values())
@@ -119,17 +119,17 @@ void test_config_n(long n)
 void test_interpreter()
 {
     Interpreter i;
-    i.run_file("/home/fuguet/Prog/MIDIProg/data/run.cmd");
+    i.run_file("D:/Prog/MIDIProg/data/run.cmd");
 }
 
 void interactive_interpreter(std::string preload)
 {
     Interpreter i;
-    i.run("midiconfig /home/fuguet/prog/MIDIProg/data/midi.cmd");
+    i.run("midiconfig D:/Prog/MIDIProg/data/midi.cmd");
 
     if(preload != "")
     {
-        i.run("config /home/fuguet/prog/MIDIProg/data/" + preload + ".cmd");
+        i.run("config D:/Prog/MIDIProg/data/" + preload + ".cmd");
         i.run("synth " + preload);
     }
 
@@ -138,6 +138,7 @@ void interactive_interpreter(std::string preload)
 
 int main()
 {
+    probe();
     interactive_interpreter("ju-2");
     return 0;
 }

@@ -10,7 +10,7 @@ class MIDIInterface
 public:
     MIDIInterface();
 
-    void setPort(unsigned int port);
+    void setPort(unsigned int in, unsigned int out);
     void listPorts();
     void send(std::vector<unsigned char> data);
     void waitMidi();
