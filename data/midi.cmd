@@ -9,7 +9,7 @@ command
     -@parameter "n : 0.5 : Channel"
     -@parameter "k : 1 : Key"
     -@parameter "v : 1 : Velocity"
-    -alias "noteoff noff n-"
+    -alias "note-off note- noteoff noff n-"
 
 command
     -name "Note On"
@@ -17,7 +17,7 @@ command
     -@parameter "n : 0.5 : Channel"
     -@parameter "k : 1 : Key"
     -@parameter "v : 1 : Velocity"
-    -alias "noteon non n+"
+    -alias "note-on note+ noteon non n+"
 
 command
     -name "Polyphonic Key Pressure"
@@ -25,7 +25,7 @@ command
     -@parameter "n : 0.5 : Channel"
     -@parameter "k : 1 : Key"
     -@parameter "v : 1 : Velocity"
-    -alias "polykey poly pk"
+    -alias "polyphonic-key-pressure polykey poly pk"
 
 command
     -name "Control Change"
@@ -33,21 +33,21 @@ command
     -@parameter "n : 0.5 : Channel"
     -@parameter "c : 1 : Controller"
     -@parameter "v : 1 : Value"
-    -alias "controlchange control cc"
+    -alias "control-change control cc"
 
 command
     -name "Program Change"
     -midi "Cn p"
     -@parameter "n : 0.5 : Channel"
     -@parameter "p : 1 : Program"
-    -alias "program pc"
+    -alias "program-change program pc"
 
 command
     -name "Channel Pressure"
     -midi "Dn v"
     -@parameter "n : 0.5 : Channel"
     -@parameter "v : 1 : Pressure"
-    -alias "channelpressure cp"
+    -alias "channel-pressure cp"
 
 command
     -name "Pitch Bend Change"
@@ -55,5 +55,5 @@ command
     -@parameter "n : 0.5 : Channel"
     -@parameter "l : 1 : LSB"
     -@parameter "m : 1 : MSB"
-    -alias "pitch pitchbend pb"
+    -alias "pitch-bend-change pitch pitch-bend pb"
 

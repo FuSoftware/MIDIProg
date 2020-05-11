@@ -38,7 +38,10 @@ void Interpreter::run(std::string command)
 
     if(c == "synth")
     {
-        this->sysex = this->load_synth(tokens[1]);
+        if(Interpreter::check_arg_count(tokens, 1))
+        {
+            this->sysex = this->load_synth(tokens[1]);
+        }
     }
     else if(c == "interactive")
     {
@@ -46,28 +49,42 @@ void Interpreter::run(std::string command)
     }
     else if(c == "config")
     {
-        std::string path = (this->folder != "" ? this->folder + "/" : "") + tokens[1];
-        this->config.run_file(path);
+        if(Interpreter::check_arg_count(tokens, 1))
+        {
+            std::string path = (this->folder != "" ? this->folder + "/" : "") + tokens[1];
+            this->config.run_file(path);
+        }
     }
     else if(c == "midiconfig")
     {
-        std::string path = (this->folder != "" ? this->folder + "/" : "") + tokens[1];
-        this->config.run_file(path);
-        if(this->config.get_synth("midi") != nullptr)
+        if(Interpreter::check_arg_count(tokens, 1))
         {
-            this->midi = this->load_synth("midi");
+            std::string path = (this->folder != "" ? this->folder + "/" : "") + tokens[1];
+            this->config.run_file(path);
+            if(this->config.get_synth("midi") != nullptr)
+            {
+                this->midi = this->load_synth("midi");
+            }
+            else
+            {
+                std::cout << "Could not load the generic midi configuration" << std::endl;
+            }
         }
-        else
-        {
-            std::cout << "Could not load the generic midi configuration" << std::endl;
-        }
-
     }
     else if(c == "port")
     {
-        this->port_in = std::stoi(tokens[1]);
-        this->port_out = std::stoi(tokens[2]);
-        this->interface.setPort(this->port_in, this->port_out);
+        if(tokens.size() == 2)
+        {
+            this->port_in = std::stoi(tokens[1]);
+            this->port_out = std::stoi(tokens[1]);
+            this->interface.setPort(this->port_in, this->port_out);
+        }
+        else if(tokens.size() == 3)
+        {
+            this->port_in = std::stoi(tokens[1]);
+            this->port_out = std::stoi(tokens[2]);
+            this->interface.setPort(this->port_in, this->port_out);
+        }
     }
     else if(c == "portlist")
     {
@@ -75,7 +92,10 @@ void Interpreter::run(std::string command)
     }
     else if(c == "channel")
     {
-        this->channel = std::stoi(tokens[1]);
+        if(Interpreter::check_arg_count(tokens, 1))
+        {
+            this->channel = std::stoi(tokens[1]);
+        }
     }
     else if(c == "receive")
     {
@@ -83,8 +103,11 @@ void Interpreter::run(std::string command)
     }
     else if(c == "send")
     {
-        std::vector<unsigned char> data = stob(tokens[1]);
-        this->interface.send(data);
+        if(Interpreter::check_arg_count(tokens, 1))
+        {
+            std::vector<unsigned char> data = stob(tokens[1]);
+            this->interface.send(data);
+        }
     }
     else if(c == "sysex")
     {
@@ -136,13 +159,16 @@ void Interpreter::run(std::string command)
     }
     else if(c == "folder")
     {
-        if(tokens[1] == "relative")
+        if(Interpreter::check_arg_count(tokens, 1))
         {
-            this->folder = this->current_folder;
-        }
-        else if(tokens[1] == "absolute")
-        {
-            this->folder = "";
+            if(tokens[1] == "relative")
+            {
+                this->folder = this->current_folder;
+            }
+            else if(tokens[1] == "absolute")
+            {
+                this->folder = "";
+            }
         }
     }
     else
@@ -192,4 +218,15 @@ std::map<std::string, MIDICommand*> Interpreter::load_synth(std::string id)
     }
 
     return midi;
+}
+
+bool Interpreter::check_arg_count(std::vector<std::string> &tokens, size_t count)
+{
+    if((tokens.size() - 1) != count)
+    {
+        std::cout << "Wrong argument count supplied, expected " << count << ", got " << tokens.size() << "\n";
+    }
+
+    return ((tokens.size() - 1) == count);
+
 }

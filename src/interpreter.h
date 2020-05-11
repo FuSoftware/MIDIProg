@@ -18,6 +18,7 @@ public:
     void run(std::vector<std::string> commands);
     void run(std::string command);
     void interactive();
+    static bool check_arg_count(std::vector<std::string> &tokens, size_t count);
 
 private:
     MIDIInterface interface;
